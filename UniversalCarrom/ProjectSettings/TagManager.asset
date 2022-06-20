@@ -3,7 +3,17 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PrimaryTextLayer
+  - HoverLayer
+  - PrimaryLayer
+  - SurfaceTextLayer
+  - SurfaceLayer
+  - SecondaryTextLayer
+  - iconView
+  - BackgroundLayer
+  - SecondaryLayer
+  - ErrorLayer
   layers:
   - Default
   - TransparentFX
@@ -13,9 +23,9 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Head
+  - Left
+  - Right
   - 
   - 
   - 
