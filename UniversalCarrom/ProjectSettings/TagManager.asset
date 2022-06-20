@@ -4,6 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - DisabledTextLayer
+  - DisabledLayer
+  - ErrorTextLayer
+  - BackgroundTextLayer
   - PrimaryTextLayer
   - HoverLayer
   - PrimaryLayer
