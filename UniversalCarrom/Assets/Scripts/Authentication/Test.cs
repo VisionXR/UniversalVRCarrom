@@ -16,7 +16,7 @@ public class Test : MonoBehaviour
     {
         if (Input.GetMouseButton(0))
           {
-
+            PM.Register();
         }
     }
 }
