@@ -23,7 +23,7 @@ public class InputManager : MonoBehaviour
 
     public void GiveVibrationFeedBack()
     {
-        OVRInput.SetControllerVibration(10, 1);
+        OVRInput.SetControllerVibration(1, 0.2f);
     }
     public void EnableInput()
     {
@@ -46,13 +46,17 @@ public class InputManager : MonoBehaviour
     }
     private void ProcessMouseInputs()
     {
-        if(Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
-            if(MouseClicked != null)
+            if (MouseClicked != null)
             {
                 MouseClicked(Input.mousePosition);
             }
-        }   
+        }
+        if (Input.GetMouseButton(1))
+        {
+            //MyAIManager.instance.AIShouldPlay("Black");
+        }
     }
     private void ProcessOculusInputs()
     {

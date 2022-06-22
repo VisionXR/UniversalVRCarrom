@@ -76,7 +76,6 @@ public class CoinManager : MonoBehaviour
         if (TmpCoins != null)
         {
             TmpWhite.transform.parent = TmpCoins.transform;
-            AddCoin(TmpWhite);
             TotalWhites++;
         }
     }
@@ -86,7 +85,6 @@ public class CoinManager : MonoBehaviour
         if (TmpCoins != null)
         {
             TmpBlack.transform.parent = TmpCoins.transform;
-            AddCoin(TmpBlack);
             TotalBlacks++;
         }
     }
@@ -96,7 +94,6 @@ public class CoinManager : MonoBehaviour
         if (TmpCoins != null)
         {
             TmpRed.transform.parent = TmpCoins.transform;
-            AddCoin(TmpRed);
             TotalRed++;
         }
     }
@@ -110,6 +107,7 @@ public class CoinManager : MonoBehaviour
         if(tag == "Black")
         {
             TotalBlacks--;
+       
         }
         if(tag == "Red")
         {
@@ -126,15 +124,24 @@ public class CoinManager : MonoBehaviour
 
         if(CoinName == "Red")
         {
-            PutRedCoinInBoard(FindCoinPosition());
+            if (TotalRed < 1)
+            {
+                PutRedCoinInBoard(FindCoinPosition());
+            }
         }
         else if (CoinName == "White")
         {
-            PutWhiteCoinInBoard(FindCoinPosition());
+            if (TotalWhites < 9)
+            {
+                PutWhiteCoinInBoard(FindCoinPosition());
+            }
         }
         else if (CoinName == "Black")
         {
-            PutBlackCoinInBoard(FindCoinPosition());
+            if (TotalBlacks < 9)
+            {
+                PutBlackCoinInBoard(FindCoinPosition());
+            }
         }
     }
     public Vector3 FindCoinPosition()

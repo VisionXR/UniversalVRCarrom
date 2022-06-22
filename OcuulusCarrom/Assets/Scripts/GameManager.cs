@@ -15,10 +15,16 @@ public class GameManager : MonoBehaviour
     }
     void Start()
     {
-        MenuManager.instance.StartClicked += StartGame;
-        StrikerManager.instance.StrikeStarted += OnStrikeStarted;
-        StrikerManager.instance.StrikeFinished += OnStrikeFinished;
-        StrikerManager.instance.StrikerFellIntoHole += OnStrikerFellIntoHole;
+        if (MenuManager.instance != null)
+        {
+            MenuManager.instance.StartClicked += StartGame;
+        }
+        if (StrikerManager.instance != null)
+        {
+            StrikerManager.instance.StrikeStarted += OnStrikeStarted;
+            StrikerManager.instance.StrikeFinished += OnStrikeFinished;
+            StrikerManager.instance.StrikerFellIntoHole += OnStrikerFellIntoHole;
+        }
     }
     private void OnStrikerFellIntoHole()
     {
@@ -31,7 +37,7 @@ public class GameManager : MonoBehaviour
         if (!isFoul)
         {
             int id = BlackAndWhiteLogic.ExecuteLogic(turnid, CurrentCoins);
-            if(CoinManager.instance.TotalWhites == 0 || CoinManager.instance.TotalBlacks == 0)
+            if(CoinManager.instance.TotalWhites <= 0 || CoinManager.instance.TotalBlacks <= 0)
             {
                 if(CoinManager.instance.TotalRed == 0)
                 {
@@ -77,25 +83,34 @@ public class GameManager : MonoBehaviour
             {
                 if (CheckForRed(CurrentCoins))
                 {
-                     if(CheckForFollowCoin(turnid,CurrentCoins))
+                    
+                    if (CheckForFollowCoin(turnid,CurrentCoins))
                     {
                         CheckForRedFollow = false;
                         AudioManager.instance.PlayRedCoveredSound();
+                    }
+                    else
+                    {
+                        CheckForRedFollow = true;
+                       
                     }
                     TurnChanged(id);
                 }
                 else
                 {
+                  
                     if (CheckForRedFollow)
                     {
                         if (CheckForFollowCoin(turnid, CurrentCoins))
                         {
                             CheckForRedFollow = false;
+                            Debug.Log(" follow up coin fell ");
                             AudioManager.instance.PlayRedCoveredSound();
                             TurnChanged(id);
                         }
                         else
                         {
+                           
                             CoinManager.instance.PutFine("Red");
                             CheckForRedFollow = false;
                             TurnChanged(id);
@@ -113,19 +128,13 @@ public class GameManager : MonoBehaviour
         else
         {
             if (turnid == 1)
-            {
-                if (CoinManager.instance.TotalWhites < 9)
-                {
-                    CoinManager.instance.PutFine("White");
-                }
+            {            
+                CoinManager.instance.PutFine("White");
                 TurnChanged(2);
             }
             else
-            {
-                if (CoinManager.instance.TotalBlacks < 9)
-                {
-                    CoinManager.instance.PutFine("Black");
-                }
+            {             
+                CoinManager.instance.PutFine("Black");   
                 TurnChanged(1);
             }
 
@@ -139,21 +148,15 @@ public class GameManager : MonoBehaviour
     }
     private bool CheckForRed(List<string> CurrentCoins)
     {
+        bool answer = false;
         foreach(string c in CurrentCoins)
         {
             if(c == "Red")
             {
-                CheckForRedFollow = true;              
+                answer = true;              
             }
         }
-        if(CheckForRedFollow)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return answer;
     }
     private bool CheckForFollowCoin(int id, List<string> CurrentCoins)
     {

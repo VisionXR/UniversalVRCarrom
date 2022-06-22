@@ -148,12 +148,19 @@ public class NewAIEasy : MonoBehaviour
                     b.isBlockedH = false;
                 }
             }
-            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo, (finalPos - StrikerPosition.transform.position).magnitude - 0.01f))
+            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo))
             {
                 GameObject tmpobj = hitInfo.collider.gameObject;
                 if (tmpobj.tag == "White" || tmpobj.tag == "Black" || tmpobj.tag == "Red")
                 {
-                    b.isBlockedC = true;
+                    if (tmpobj.name != b.Coin.name)
+                    {
+                        b.isBlockedC = true;
+                    }
+                    else
+                    {
+                        b.isBlockedC = false;
+                    }
                 }
                 else
                 {

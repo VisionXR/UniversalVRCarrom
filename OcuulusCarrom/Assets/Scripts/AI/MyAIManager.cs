@@ -9,6 +9,11 @@ public class MyAIManager : MonoBehaviour
     {
         instance = this;
     }
+
+    void Start()
+    {
+        //ActivateAI(3);
+    }
     public void TurnChanged(int id)
     {
         GetComponent<AIBotControlling>().OnTurnChanged(id);

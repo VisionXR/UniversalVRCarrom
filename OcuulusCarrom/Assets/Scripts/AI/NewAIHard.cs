@@ -17,6 +17,7 @@ public class NewAIHard : MonoBehaviour
     LineRenderer lr;
     public float delayTime = 0.1f;
     public event Action<Vector3> StrikeStarted, StrikeEnded;
+
     public void StartAI()
     {
         ReverseShotDictionary = new SortedDictionary<float, Vector3>();
@@ -25,6 +26,7 @@ public class NewAIHard : MonoBehaviour
         info3 = new List<CoinInfo>();
         info4 = new List<CoinInfo>();
         Striker = GameObject.Find("P2Striker");
+        lr = GetComponent<LineRenderer>();
     }
     private IEnumerator StartSequence(string coinType)
     {
@@ -179,21 +181,26 @@ public class NewAIHard : MonoBehaviour
                     b.isBlockedH = false;
                 }
             }
-            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo, (finalPos - StrikerPosition.transform.position).magnitude - 0.01f))
+            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo))
             {
-                if (b.angle < 60 || b.angle > 90)
-                {
+                
                     GameObject tmpobj = hitInfo.collider.gameObject;
                     if (tmpobj.tag == "White" || tmpobj.tag == "Black" || tmpobj.tag == "Red")
                     {
-                        b.isBlockedC = true;
-
+                         if (tmpobj.name != b.Coin.name)
+                         {
+                            b.isBlockedC = true;
+                         }
+                         else
+                         {
+                            b.isBlockedC = false;
+                         }
                     }
                     else
                     {
                         b.isBlockedC = false;
                     }
-                }
+                
             }
 
             if (b.angle <= 40)
@@ -203,17 +210,24 @@ public class NewAIHard : MonoBehaviour
             else if(b.angle > 40 && b.angle < 60)
             {
                 info2.Add(b);
+
             }
             else if(b.angle >= 60 && b.angle <= 90)
             {
                 if (b.Hole.name != "Hole1" && b.Hole.name != "Hole4")
                 {
                     info3.Add(b);
+               
+                }
+                else
+                {
+                    info4.Add(b);
                 }
             }
             else
             {
                 info4.Add(b);
+            
             }
         }
     } 
@@ -224,6 +238,7 @@ public class NewAIHard : MonoBehaviour
         float force;
         if (info1.Count != 0)
         {
+           
             foreach (CoinInfo b1 in info1)
             {
                 if(b1.isBlockedC == false && b1.isBlockedH == false)
@@ -236,6 +251,7 @@ public class NewAIHard : MonoBehaviour
         }
         if(info2.Count != 0)
         {
+          
             foreach (CoinInfo b1 in info2)
             {
                 if (b1.isBlockedC == false && b1.isBlockedH == false)
@@ -248,6 +264,7 @@ public class NewAIHard : MonoBehaviour
         }
         if(info3.Count != 0)
         {
+        
             foreach (CoinInfo b1 in info3)
             {
                 if (b1.isBlockedC == false && b1.isBlockedH == false)
@@ -258,26 +275,14 @@ public class NewAIHard : MonoBehaviour
                 }
             }
         }
-        if(info4.Count != 0)
-        {
-            foreach (CoinInfo b1 in info4)
-            {
-                if (b1.isBlockedC == false && b1.isBlockedH == false)
-                {
-                    force = b1.distance + 1.2f;
-                    StartCoroutine(TryReverseShot(b1, 0));
-                    yield break;
-                }
-            }
-        }
         if (info1.Count != 0)
         {
-                CoinInfo b1 = info1[0];
-                force = b1.distance + 1f;
-                b1 = DoubeTouch(b1);             
-                StartCoroutine(TryForWardShot(b1, force));
-                yield break;            
-         }
+            CoinInfo b1 = info1[0];
+            force = b1.distance + 1f;
+            b1 = DoubeTouch(b1);
+            StartCoroutine(TryForWardShot(b1, force));
+            yield break;
+        }
         if (info2.Count != 0)
         {
             CoinInfo b1 = info2[0];
@@ -287,6 +292,20 @@ public class NewAIHard : MonoBehaviour
             yield break;
 
         }
+        if (info4.Count != 0)
+        {         
+            foreach (CoinInfo b1 in info4)
+            {           
+                if (b1.isBlockedC == false && b1.isBlockedH == false)
+                {
+                   
+                    force = b1.distance + 1.1f;
+                    StartCoroutine(TryForWardShot(b1, force));
+                    yield break;
+                }
+            }
+        }
+     
         if (info3.Count != 0)
         {
             CoinInfo b1 = info3[0];
@@ -296,6 +315,7 @@ public class NewAIHard : MonoBehaviour
         }
         if (info4.Count != 0)
         {
+           
             CoinInfo b1 = info4[0];
             force = b1.distance + 1.2f;
             StartCoroutine(TryForWardShot(b1, force));
@@ -342,7 +362,7 @@ public class NewAIHard : MonoBehaviour
                     if (b1.Coin.tag == tmpobj.tag || tmpobj.tag == "Red")
                     {
                         Vector3 newHoleDir = (b1.Hole.transform.position - tmpobj.transform.position).normalized;
-                        Vector3 finalpos1 = tmpobj.transform.position - newHoleDir * (CoinRadius + StrikerRadius);
+                        Vector3 finalpos1 = tmpobj.transform.position - newHoleDir * (2*CoinRadius);
                         Vector3 newCoinDir = (finalpos1 - b1.Coin.transform.position).normalized;
                         Vector3 finalpos2 = b1.Coin.transform.position - newCoinDir * (CoinRadius + StrikerRadius);
                         b1.FinalPos = finalpos2;
@@ -353,7 +373,7 @@ public class NewAIHard : MonoBehaviour
         if (b1.isBlockedC)
         {
             Vector3 Strikerdir = (b1.FinalPos - Striker.transform.position).normalized;
-            if (Physics.SphereCast(Striker.transform.position, StrikerRadius, Strikerdir, out hitInfo, (b1.FinalPos - Striker.transform.position).magnitude - 0.01f))
+            if (Physics.SphereCast(Striker.transform.position, StrikerRadius, Strikerdir, out hitInfo))
             {
                 GameObject tmpobj = hitInfo.collider.gameObject;
                 if (tmpobj.tag == "White" || tmpobj.tag == "Black" || tmpobj.tag == "Red")
@@ -370,7 +390,7 @@ public class NewAIHard : MonoBehaviour
 
     private IEnumerator TryReverseShot(CoinInfo b, float force)
     {
-
+        
         if (b.StrikerPos.name != "P2RightBound")
         {
             Striker.transform.position = Striker.GetComponent<AIStrikerMovement>().FindStrikerNextPosition(b.StrikerPos.transform.position, -b.StrikerPos.transform.right);
@@ -383,39 +403,27 @@ public class NewAIHard : MonoBehaviour
         if (b.Hole.name == "Hole3")
         {
            
-            StartCoroutine(CheckRayCastFromStrikerToEdge(b, -1));
+            StartCoroutine(CheckRayCastFromStrikerToEdge(b, 1));
         }
         else if(b.Hole.name == "Hole2")
         {
             
-            StartCoroutine(CheckRayCastFromStrikerToEdge(b, 1));
-        }
-        else if (b.Hole.name == "Hole1")
-        {
-            Vector3 holedir = (Holes[0].transform.position - b.Coin.transform.position).normalized;
-            Vector3 finalPos = b.Coin.transform.position - holedir * (CoinRadius + StrikerRadius);
-            b.FinalPos = finalPos;
-            StartCoroutine(CheckRayCastFromStrikerToEdge(b, 1));
-        }
-        else if (b.Hole.name == "Hole4")
-        {
-            Vector3 holedir = (Holes[3].transform.position - b.Coin.transform.position).normalized;
-            Vector3 finalPos = b.Coin.transform.position - holedir * (CoinRadius + StrikerRadius);
-            b.FinalPos = finalPos;
             StartCoroutine(CheckRayCastFromStrikerToEdge(b, -1));
         }
+        
     }
     private IEnumerator CheckRayCastFromStrikerToEdge(CoinInfo b,int Num)
     {
       
         RaycastHit HitInfo,HitInfo1;   
-        for(float i = 0; i <= 90; i = i+0.005f)
+        for(float i = 0; i <= 90; i = i+0.1f)
         {
             if(Physics.Raycast(Striker.transform.position,-Striker.transform.forward,out HitInfo))
             {
                 if (HitInfo.collider.name == "LeftEdge")
-                {                  
-                    Vector3 EdgeHitPoint = HitInfo.point;                   
+                {
+                   
+                    Vector3 EdgeHitPoint = HitInfo.point;
                     Vector3 EdgeNormal = HitInfo.normal;
                     Vector3 OriginalDir = (EdgeHitPoint - Striker.transform.position).normalized;
                     Vector3 ReflectedDir = Vector3.Reflect(OriginalDir, EdgeNormal);
@@ -424,7 +432,7 @@ public class NewAIHard : MonoBehaviour
                         if (HitInfo1.collider.name == b.Coin.name)
                         {
                             ReverseShotDictionary.Add(Vector3.Distance(b.FinalPos, HitInfo1.point), EdgeHitPoint);
-                       
+                            yield return new WaitForSeconds(0.01f);
                         }
                     }
                 }
@@ -451,7 +459,7 @@ public class NewAIHard : MonoBehaviour
         }
         if (!DidIHit)
         {
-            dir = (b.FinalPos - Striker.transform.position).normalized;
+            dir = (b.Coin.transform.position - Striker.transform.position).normalized;
             if (StrikeStarted != null)
             {
                 StrikeStarted(b.FinalPos);
@@ -461,7 +469,7 @@ public class NewAIHard : MonoBehaviour
             {
                 StrikeEnded(b.FinalPos);
             }
-            Striker.GetComponent<StrikerHitting>().FireStriker(dir, 3);
+            Striker.GetComponent<StrikerHitting>().FireStriker(dir, 5);
         }
     }
     private IEnumerator SortBalls(List<CoinInfo> info)

@@ -18,7 +18,7 @@ public class AIBotControlling : MonoBehaviour
      
         AIEasyScript.StrikeStarted += OnStrikedStarted;
         AIEasyScript.StrikeEnded += OnStrikeEnded;
-        AIMediumScript.StrikeStarted += OnStrikeEnded;
+        AIMediumScript.StrikeStarted += OnStrikedStarted;
         AIMediumScript.StrikeEnded += OnStrikeEnded;
         AIHardScript.StrikeStarted += OnStrikedStarted;
         AIHardScript.StrikeEnded += OnStrikeEnded;
@@ -26,12 +26,14 @@ public class AIBotControlling : MonoBehaviour
 
     private void OnStrikeEnded(Vector3 pos)
     {
+       
         CurrentBot.GetComponent<HeadAndHand>().ShowFingerStrikeAnimation(pos);
         CurrentBot.GetComponent<HeadAndHand>().RemoveParent();
     }
 
     private void OnStrikedStarted(Vector3 pos)
     {
+       
         CurrentBot.GetComponent<HeadAndHand>().ShowFingerCloseAnimation(pos);
     }
     public void OnTurnChanged(int id)

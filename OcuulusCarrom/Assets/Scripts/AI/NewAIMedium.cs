@@ -14,6 +14,7 @@ public class NewAIMedium : MonoBehaviour
     public float CoinRadius = 0.03f,StrikerRadius = 0.04f;
     Vector3 dir;
     public event Action<Vector3> StrikeStarted, StrikeEnded;
+    public float CutOffAngle = 70;
      public void StartAI()
      {
         info = new List<CoinInfo>();
@@ -147,12 +148,19 @@ public class NewAIMedium : MonoBehaviour
                     b.isBlockedH = false;
                 }
             }
-            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo, (finalPos - StrikerPosition.transform.position).magnitude - 0.01f))
+            if (Physics.SphereCast(StrikerPosition.transform.position, StrikerRadius, Strikerdir, out hitInfo))
             {
                 GameObject tmpobj = hitInfo.collider.gameObject;
                 if (tmpobj.tag == "White" || tmpobj.tag == "Black" || tmpobj.tag == "Red")
                 {
-                    b.isBlockedC = true;
+                    if (tmpobj.name != b.Coin.name)
+                    {
+                        b.isBlockedC = true;
+                    }
+                    else
+                    {
+                        b.isBlockedC = false;
+                    }
                 }
                 else
                 {
@@ -278,7 +286,7 @@ public class NewAIMedium : MonoBehaviour
         }
         else
         {          
-          force = b.distance + 1 + (b.angle / 30 - 1) * 0.75f;           
+          force = b.distance + 1;           
         }
         if (b.StrikerPos.name != "P2RightBound")
         {
@@ -288,7 +296,7 @@ public class NewAIMedium : MonoBehaviour
         {
             Striker.transform.position = Striker.GetComponent<AIStrikerMovement>().FindStrikerNextPosition(b.StrikerPos.transform.position, b.StrikerPos.transform.right);
         }
-        if (b.angle < 60)
+        if (b.angle < CutOffAngle)
         {
             dir = (b.FinalPos - Striker.transform.position).normalized;
         }
