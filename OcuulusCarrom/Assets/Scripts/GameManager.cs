@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     private void OnStrikerFellIntoHole()
     {
         isFoul = true;
+        AudioManager.instance.PlayFoulSound();
     }
     private void OnStrikeFinished()
     {
@@ -70,6 +71,7 @@ public class GameManager : MonoBehaviour
                 }
                 EndGame();
 
+
             }
             else
             {
@@ -78,6 +80,7 @@ public class GameManager : MonoBehaviour
                      if(CheckForFollowCoin(turnid,CurrentCoins))
                     {
                         CheckForRedFollow = false;
+                        AudioManager.instance.PlayRedCoveredSound();
                     }
                     TurnChanged(id);
                 }
@@ -88,6 +91,7 @@ public class GameManager : MonoBehaviour
                         if (CheckForFollowCoin(turnid, CurrentCoins))
                         {
                             CheckForRedFollow = false;
+                            AudioManager.instance.PlayRedCoveredSound();
                             TurnChanged(id);
                         }
                         else
@@ -133,7 +137,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
     private bool CheckForRed(List<string> CurrentCoins)
     {
         foreach(string c in CurrentCoins)
@@ -152,7 +155,6 @@ public class GameManager : MonoBehaviour
             return false;
         }
     }
-
     private bool CheckForFollowCoin(int id, List<string> CurrentCoins)
     {
         bool isFollowCoinFell = false;
@@ -192,6 +194,7 @@ public class GameManager : MonoBehaviour
     {
         CoinManager.instance.DestroyAllCoins();
         InputManager.instance.DisableInput();
+        MyAIManager.instance.ResetAI();
     }
     private void TurnChanged(int id)
     {
@@ -210,7 +213,7 @@ public class GameManager : MonoBehaviour
             InputManager.instance.DisableInput();
             StrikerManager.instance.PlaceStriker(turnid);
             StrikerManager.instance.ActivateStriker(turnid);
-            if(CoinManager.instance.TotalBlacks > 6 && CoinManager.instance.TotalRed != 0)
+            if(CoinManager.instance.TotalBlacks < 3 && CoinManager.instance.TotalRed != 0)
             {
                 MyAIManager.instance.AIShouldPlay("Red");
             }

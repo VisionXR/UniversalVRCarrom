@@ -20,6 +20,11 @@ public class InputManager : MonoBehaviour
     {
         instance = this;
     }
+
+    public void GiveVibrationFeedBack()
+    {
+        OVRInput.SetControllerVibration(10, 1);
+    }
     public void EnableInput()
     {
         isInputEnabled = true;
@@ -30,8 +35,6 @@ public class InputManager : MonoBehaviour
         isInputEnabled = false;
         InputEnabled(isInputEnabled);
     }
-
-    // Update is called once per frame
     void Update()
     {
         if (isInputEnabled)
@@ -79,6 +82,7 @@ public class InputManager : MonoBehaviour
         if(value < 0.1f && CanIStrike)
         {      
             UserClicked(force);
+            GiveVibrationFeedBack();
             StopCoroutine(ForceRoutine);
             CanIStrike = false;
         }

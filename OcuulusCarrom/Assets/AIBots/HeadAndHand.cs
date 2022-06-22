@@ -50,6 +50,7 @@ public class HeadAndHand : MonoBehaviour
     }
     public void SetParent()
     {
+    
         Hand.transform.parent = Striker.transform;
         Hand.transform.localPosition = Vector3.Lerp(Hand.transform.localPosition, HandPosStrike.transform.localPosition,1);
         Hand.transform.localRotation = Quaternion.Lerp(Hand.transform.localRotation, HandPosStrike.transform.localRotation,1);

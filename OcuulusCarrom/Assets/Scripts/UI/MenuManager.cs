@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour
 {
     public static MenuManager instance;
-    public GameObject StartPanel,HomePanel,InputPanel;
+    public GameObject StartPanel,HomePanel,InputPanel,DifficultyPanel,currentPanel;
     public event Action StartClicked;
     public GraphicRaycaster gr;
     private void Awake()
@@ -19,6 +20,8 @@ public class MenuManager : MonoBehaviour
         InputManager.instance.MouseClicked += CheckRaycast;
         InputManager.instance.InputEnabled += OnInputEnabled;
         GameManager.instance.GameCompleted += OnGameCompleted;
+        currentPanel = StartPanel;
+        ResetPanels();
         EnablePanel(StartPanel);
     }
 
@@ -33,12 +36,10 @@ public class MenuManager : MonoBehaviour
             DisablePanel(InputPanel);
         }
     }
-
     private void OnGameCompleted(string obj)
     {
         EnablePanel(HomePanel);
     }
-
     void CheckRaycast(Vector2 pos)
     {
      
@@ -48,30 +49,47 @@ public class MenuManager : MonoBehaviour
         gr.Raycast(ped, results);
         foreach(RaycastResult r in results)
         {
-           if( r.gameObject.name == "StartButton")
+            if( r.gameObject.name == "StartButton")
             {
-                StartButtonClicked();
-             
+                StartButtonClicked();            
+            }
+            else if (r.gameObject.name == "EasyButton")
+            {
+                DifficultyButtonClicked(1);
+            }
+            else if (r.gameObject.name == "MediumButton")
+            {
+                DifficultyButtonClicked(2);
+            }
+            else if (r.gameObject.name == "HardButton")
+            {
+                DifficultyButtonClicked(3);
             }
         }
     }
-
     public void StartButtonClicked()
-    {       
-        if (StartClicked != null)
-        {
-            DisablePanel(StartPanel);
-            StartClicked();
-        }   
+    {             
+       EnablePanel(DifficultyPanel);       
     }
-
+    public void DifficultyButtonClicked(int id)
+    {      
+       DisablePanel(DifficultyPanel);
+       MyAIManager.instance.ActivateAI(id);
+       StartCoroutine(WaitAndStart());
+    }
+    private IEnumerator WaitAndStart()
+    {
+        yield return new WaitForSeconds(1);
+        StartClicked();
+    }
     public void OnHomeButtonClicked()
     {
-        DisablePanel(HomePanel);
         EnablePanel(StartPanel);
     }
     private void EnablePanel(GameObject panel)
     {
+        DisablePanel(currentPanel);
+        currentPanel = panel;
         panel.GetComponent<CanvasGroup>().alpha = 1;
         panel.GetComponent<CanvasGroup>().blocksRaycasts = true;
     }
@@ -79,5 +97,11 @@ public class MenuManager : MonoBehaviour
     {
         panel.GetComponent<CanvasGroup>().alpha = 0;
         panel.GetComponent<CanvasGroup>().blocksRaycasts = false;
+    }
+    public void ResetPanels()
+    {
+        DisablePanel(StartPanel);
+        DisablePanel(DifficultyPanel);
+        DisablePanel(HomePanel);
     }
 }

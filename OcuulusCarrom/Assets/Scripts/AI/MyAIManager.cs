@@ -9,12 +9,6 @@ public class MyAIManager : MonoBehaviour
     {
         instance = this;
     }
-
-    private void Start()
-    {
-        ActivateAI(DifficultyLevel);
-        
-    }
     public void TurnChanged(int id)
     {
         GetComponent<AIBotControlling>().OnTurnChanged(id);
@@ -52,4 +46,9 @@ public class MyAIManager : MonoBehaviour
         }
         GetComponent<AIBotControlling>().CreateBot(id);
     }   
+
+    public void ResetAI()
+    {
+        GetComponent<AIBotControlling>().DestroyBot();
+    }
 }
